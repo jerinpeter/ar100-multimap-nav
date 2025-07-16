@@ -3,9 +3,11 @@
 This repo shows the multi-map multi-room autonomous navigation implementation using wormholes for AR100 robot by Anscer robotics in a custom environment 
 
 <p align="center">
-  <a href="https://www.youtube.com/watch?v=18NSClquw_o">
-    <img src="https://img.youtube.com/vi/18NSClquw_o/0.jpg" alt="Watch the demo">
+  <a href="https://www.youtube.com/watch?v=18NSClquw_o" target="_blank">
+    <img src="media/video.png" alt="Watch the demo" width="480">
   </a>
+  <br/>
+  <em>Click to view full video demo</em>
 </p>
 ## Prerequisites
 
