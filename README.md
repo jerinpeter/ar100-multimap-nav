@@ -18,6 +18,12 @@ This repo shows the multi-map multi-room autonomous navigation implementation us
 
 * After this, you will have a working AR100 simulation for working with this repo.
 
+<p align="center">
+  <img src="media/simusetup.png" alt="System Flowchart" width="600"/>
+  <br/>
+  <em>Simulation Setup</em>
+</p>
+
 #### 1. Clone the Package into Your Catkin Workspace:
 
 ```sh
@@ -39,7 +45,7 @@ source devel/setup.bash
 ```
 roslaunch multi_map_nav navigation_server.launch
 ```
-
+Note: Your anscer_navigation should be up and running for this work 
 #### 4. Send a navigation goal: You can send a goal using an action client, or use a custom script like:
 
 You can send navigation goals using the ROS action client or directly with rostopic:
@@ -63,3 +69,92 @@ You can send navigation goals using the ROS action client or directly with rosto
     target_y: -6.0
     target_map: 'map2'"
   ```
+## System Overview
+
+### WormholeManager
+
+- Connects to an SQLite database to retrieve wormhole data.
+- Manages map-to-map connectivity and determines navigation routes.
+- Supports querying direct and indirect transitions between maps.
+
+### MapSwitcher
+
+- Loads map configurations (YAML files) from a specified directory.
+- Controls the `map_server` to switch between environments.
+- Handles map transitions based on the robot’s planned route.
+
+### NavigationServer
+
+- Implements a ROS action server to process incoming navigation goals.
+- Orchestrates the navigation process across maps.
+- Integrates with `move_base` for path planning and execution within each individual map.
+
+## Key Features
+
+- Wormhole-based transitions between different maps.
+- Lightweight SQLite database for storing and managing inter-map connections.
+- Dynamic map switching using the standard ROS `map_server`.
+- ROS-compatible action interface for receiving and handling navigation goals.
+- Full integration with `move_base` for local navigation and obstacle avoidance.
+
+## Navigation Workflow
+
+### 1. Receiving a Navigation Goal
+
+The system starts by accepting a navigation goal, which includes:
+- The target coordinates (x, y)
+- The name of the destination map
+
+### 2. Evaluating the Current Map
+
+Upon receiving the request, the system checks whether the destination is on the same map the robot is currently operating on:
+
+- **If the target is within the current map**:  
+  The goal is passed directly to `move_base` for standard ROS navigation.
+
+- **If the target is in a different map**:  
+  The system initiates multi-map path planning to determine the appropriate transition route.
+
+### 3. Multi-Map Path Planning
+
+Depending on the wormhole connectivity, the system selects either a direct or an indirect route:
+
+#### Direct Map Transition
+- A direct wormhole from the current map to the destination map is identified.
+- The robot navigates to the wormhole location.
+- The system loads the destination map.
+- The robot proceeds to the final target location.
+
+<p align="center">
+  <img src="media/nav1_1.png" alt="System Flowchart" width="600"/>
+  <br/>
+  <em>Goal Given to Map1, Moving to Wormhole (map1<->map2)</em>
+</p>
+
+<p align="center">
+  <img src="media/nav1_2.png" alt="System Flowchart" width="600"/>
+  <br/>
+  <em>Reached Wormhole, Activated Map2, Moving to goal</em>
+</p>
+
+
+#### Indirect Route via Central Hub (map 1)
+- If no direct wormhole exists, the robot first transitions to a central hub map (e.g., `map1`).
+- It then navigates to a wormhole leading to the destination map.
+- Once the destination map is loaded, the robot moves to the target coordinates.
+
+### 4. Segment-by-Segment Navigation
+
+For each stage in the path:
+- The robot receives a sub-goal corresponding to a wormhole or the final target.
+- `move_base` handles local navigation.
+- If the goal is reached, the next stage begins.
+- If any step fails, the process is halted and an error is returned.
+
+---
+
+This modular approach allows the robot to traverse complex, multi-room environments with minimal configuration, relying on a combination of wormhole-based transitions and traditional ROS navigation.
+
+
+This architecture allows for scalable and modular multi-environment robot navigation, useful in applications such as smart buildings, warehouses, or research platforms.
+
