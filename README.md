@@ -2,6 +2,11 @@
 
 This repo shows the multi-map multi-room autonomous navigation implementation using wormholes for AR100 robot by Anscer robotics in a custom environment 
 
+<p align="center">
+  <a href="https://www.youtube.com/watch?v=18NSClquw_o">
+    <img src="https://img.youtube.com/vi/18NSClquw_o/0.jpg" alt="Watch the demo">
+  </a>
+</p>
 ## Prerequisites
 
 * [Ubuntu version : 20.04](https://ubuntu.com/download/desktop)
@@ -215,3 +220,9 @@ This modular approach allows the robot to traverse complex, multi-room environme
 
 This architecture allows for scalable and modular multi-environment robot navigation, useful in applications such as smart buildings, warehouses, or research platforms.
 
+## Further Work / Improvements
+
+* Orientation of the robot is always set to `M_PI/2` which creates akward transistion between wormholes and the rooms.
+* Can be solved by echoing current orientation and stopping at that, wait for map switch then continue navigation.
+* Can add validity check for the waypoints, Even though the robot navigates to the correct room/map, I have not implemented a logic to check if the given coordinates are inside the map (not out of bounds).
+* Can add Preemption handling,In the current implementation, if a goal is given another one can't be given until this is finished
