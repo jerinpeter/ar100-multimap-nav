@@ -25,7 +25,6 @@ private:
     WormholeManager wormhole_manager_;
     MapSwitcher map_switcher_;
     std::string current_map_;
-    
     bool move_base_to(double x, double y, double yaw);
 
 };
