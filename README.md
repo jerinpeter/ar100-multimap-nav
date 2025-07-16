@@ -161,7 +161,7 @@ Receives:
 
 <p align="center">
   <img src="media/nav2_2.png" width="600"/>
-  <br/><em>Map2 → map1 → map3 transition</em>
+  <br/><em>Map3 → map1 → map2 transition</em>
 </p>
 
 <p align="center">
