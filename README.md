@@ -1,122 +1,84 @@
-# Multi-Map Navigation Implementation using ANSCER A100 AMR
+# 🧭 Multi-Map Navigation with ANSCER A100 AMR
 
-This repo shows the multi-map multi-room autonomous navigation implementation using wormholes for AR100 robot by Anscer robotics in a custom environment 
+This repository demonstrates **multi-map, multi-room autonomous navigation** using *wormhole-based transitions* on the **AR100 robot by Anscer Robotics**, tested in a custom multi-room environment.
 
 <p align="center">
   <a href="https://www.youtube.com/watch?v=18NSClquw_o" target="_blank">
     <img src="media/video.png" alt="Watch the demo" width="480">
   </a>
   <br/>
-  <em>Click to view full video demo</em>
+  <em>🎥 Click to view full video demo</em>
 </p>
-## Prerequisites
 
-* [Ubuntu version : 20.04](https://ubuntu.com/download/desktop)
-* [ROS version : Noetic](http://wiki.ros.org/noetic/Installation/Ubuntu)
-* Editor used : [Vscode](https://code.visualstudio.com/download)
-* Compiler  : catkin
+## 🧰 Prerequisites
+- **OS**: [Ubuntu 20.04](https://ubuntu.com/download/desktop)  
+- **ROS**: [ROS Noetic](http://wiki.ros.org/noetic/Installation/Ubuntu)  
+- **Editor**: [VSCode](https://code.visualstudio.com/download)  
+- **Build System**: Catkin  
 
-## Building, Installation Setup & Usage
-* Follow the the instructions [here](https://github.com/anscer/AR100) and install Anscer Robotics AR100 ROS package. 
+## ⚙️ Setup & Installation
+1. **Install AR100 simulation**  
+   Follow the instructions from the official [Anscer AR100 repository](https://github.com/anscer/AR100).
 
-* Replace the World folder with the one given in this repo (custom world with 3 room setup).
-
-* Replace the map.pgm and map.yaml files in the map folder inside anscer_navigation folder with the map1.pgm and map1.yaml file in this repo and rename it to the default names.
-
-* After this, you will have a working AR100 simulation for working with this repo.
+2. **Replace with Custom World**
+   - Use the provided `World/` folder (3-room setup).
+   - Replace `map.pgm` and `map.yaml` in `anscer_navigation/maps/` with `map1.pgm` and `map1.yaml` from this repo and rename them to the default names.
 
 <p align="center">
-  <img src="media/simusetup.png" alt="System Flowchart" width="600"/>
+  <img src="media/simusetup.png" alt="Simulation Setup" width="600"/>
   <br/>
-  <em>Simulation Setup</em>
+  <em>Custom simulation setup</em>
 </p>
 
-#### 1. Clone the Package into Your Catkin Workspace:
+## 🚀 How to Run
 
-```sh
+### 1. Clone this Repository
+```bash
 cd ~/catkin_ws/src
 git clone https://github.com/jerinpeter/ar100-multimap-nav.git
-
 ```
 
-#### 2. Build the Workspace
-
-```sh
+### 2. Build the Package
+```bash
 cd ~/catkin_ws
 catkin_make
 source devel/setup.bash
 ```
 
-#### 3. Launch the navigation server:
-
-```
+### 3. Launch the Navigation Server
+```bash
 roslaunch multi_map_nav navigation_server.launch
 ```
-Note: Your anscer_navigation should be up and running for this work 
-#### 4. Send a navigation goal: You can send a goal using an action client, or use a custom script like:
+> Note: Ensure `anscer_navigation` is running before launching the navigation server.
 
-You can send navigation goals using the ROS action client or directly with rostopic:
+### 4. Send a Navigation Goal
+You can publish a goal manually using `rostopic`:
+```bash
+rostopic pub /navigate_to_goal/goal multi_map_nav/NavigateToGoalActionGoal "header:
+  seq: 0
+  stamp: {secs: 0, nsecs: 0}
+  frame_id: ''
+goal_id:
+  stamp: {secs: 0, nsecs: 0}
+  id: ''
+goal:
+  target_x: -5.0
+  target_y: -6.0
+  target_map: 'map2'"
+```
 
-- Using `rostopic`:
-
-  ```bash
-  rostopic pub /navigate_to_goal/goal multi_map_nav/NavigateToGoalActionGoal "header:
-    seq: 0
-    stamp:
-      secs: 0
-      nsecs: 0
-    frame_id: ''
-  goal_id:
-    stamp:
-      secs: 0
-      nsecs: 0
-    id: ''
-  goal:
-    target_x: -5.0
-    target_y: -6.0
-    target_map: 'map2'"
-  ```
-## The Database Structure
-
-The wormhole connections are stored in a SQLite database in the below format:
-
+## 🗃️ Database Structure
+The **SQLite database** stores all wormhole connections:
 ```sql
 CREATE TABLE wormholes (
-    from_map TEXT,  -- Source map name
-    to_map TEXT,    -- Destination map name
-    from_x REAL,    -- X-coordinate in source map
-    from_y REAL     -- Y-coordinate in source map
+  from_map TEXT,
+  to_map   TEXT,
+  from_x   REAL,
+  from_y   REAL
 );
 ```
-## Custom Action Definition
-NavigateToGoal.action:
-```
-# Request
-float64 target_x
-float64 target_y
-string target_map
 
----
-
-# Result
-bool success
-string message
-
----
-
-# Feedback
-string feedback_msg
-```
-## System Overview
-
-### WormholeManager
-
-- Connects to an SQLite database to retrieve wormhole data.
-- Manages map-to-map connectivity and determines navigation routes.
-- Supports querying direct and indirect transitions between maps.
-
-### Wormhole Map Connections
-
+### Sample Entries
 | from_map | to_map | from_x | from_y |
 |----------|--------|--------|--------|
 | map1     | map2   | -7.8   | 1.2    |
@@ -124,107 +86,120 @@ string feedback_msg
 | map1     | map3   |  8.5   | 2.5    |
 | map3     | map1   |  8.5   | 2.5    |
 
-### MapSwitcher
-
-- Loads map configurations (YAML files) from a specified directory.
-- Controls the `map_server` to switch between environments.
-- Handles map transitions based on the robot’s planned route.
-
-### NavigationServer
-
-- Implements a ROS action server to process incoming navigation goals.
-- Orchestrates the navigation process across maps.
-- Integrates with `move_base` for path planning and execution within each individual map.
-
-## Key Features
-
-- Wormhole-based transitions between different maps.
-- Lightweight SQLite database for storing and managing inter-map connections.
-- Dynamic map switching using the standard ROS `map_server`.
-- ROS-compatible action interface for receiving and handling navigation goals.
-- Full integration with `move_base` for local navigation and obstacle avoidance.
-
-## Navigation Workflow
-
-### 1. Receiving a Navigation Goal
-
-The system starts by accepting a navigation goal, which includes:
-- The target coordinates (x, y)
-- The name of the destination map
-
-### 2. Evaluating the Current Map
-
-Upon receiving the request, the system checks whether the destination is on the same map the robot is currently operating on:
-
-- **If the target is within the current map**:  
-  The goal is passed directly to `move_base` for standard ROS navigation.
-
-- **If the target is in a different map**:  
-  The system initiates multi-map path planning to determine the appropriate transition route.
-
-### 3. Multi-Map Path Planning
-
-Depending on the wormhole connectivity, the system selects either a direct or an indirect route:
-
-#### Direct Map Transition
-- A direct wormhole from the current map to the destination map is identified.
-- The robot navigates to the wormhole location.
-- The system loads the destination map.
-- The robot proceeds to the final target location.
-
-<p align="center">
-  <img src="media/nav1_1.png" alt="System Flowchart" width="600"/>
-  <br/>
-  <em>Goal Given to Map1, Moving to Wormhole (map1<->map2)</em>
-</p>
-
-<p align="center">
-  <img src="media/nav1_2.png" alt="System Flowchart" width="600"/>
-  <br/>
-  <em>Reached Wormhole, Activated Map2, Moving to goal</em>
-</p>
-
-
-#### Indirect Route via Central Hub (map 1)
-- If no direct wormhole exists, the robot first transitions to a central hub map (e.g., `map1`).
-- It then navigates to a wormhole leading to the destination map.
-- Once the destination map is loaded, the robot moves to the target coordinates.
-
-### 4. Segment-by-Segment Navigation
-
-For each stage in the path:
-- The robot receives a sub-goal corresponding to a wormhole or the final target.
-- `move_base` handles local navigation.
-- If the goal is reached, the next stage begins.
-- If any step fails, the process is halted and an error is returned.
-
-
-<p align="center">
-  <img src="media/nav2_1.png" alt="System Flowchart" width="600"/>
-  <br/>
-  <em>No direct goal, Navigated back to Central hub</em>
-</p>
-<p align="center">
-  <img src="media/nav2_2.png" alt="System Flowchart" width="600"/>
-  <br/>
-  <em>Room2 map gets activated and goal sets to Wormhole (R2<->R1)</em>
-</p>
-<p align="center">
-  <img src="media/nav2_3.png" alt="System Flowchart" width="600"/>
-  <br/>
-  <em>Reached Goal</em>
-</p>
+## 🛠️ Custom Action Definition
+**`NavigateToGoal.action`**
+```action
+# Goal
+float64 target_x
+float64 target_y
+string target_map
 
 ---
+# Result
+bool success
+string message
 
-This modular approach allows the robot to traverse complex, multi-room environments with minimal configuration, relying on a combination of wormhole-based transitions and traditional ROS navigation.
+---
+# Feedback
+string feedback_msg
+```
 
+## 🔍 System Architecture
 
-This architecture allows for scalable and modular multi-environment robot navigation, useful in applications such as smart buildings, warehouses, or research platforms.
+### 🧠 WormholeManager
+- Connects to SQLite DB to retrieve wormhole data.
+- Computes direct/indirect transitions between maps.
+- Enables seamless planning across environments.
 
-## Further Work / Improvements
+### 🗺️ MapSwitcher
+- Loads `.pgm`/`.yaml` map files.
+- Dynamically controls `map_server` for each transition.
+- Resets localization when switching.
+
+### 🚦 NavigationServer
+- Custom ROS Action Server.
+- Accepts goal with target (x, y) and map name.
+- Decides if direct `move_base` call is enough or wormhole is needed.
+
+## 🔄 Navigation Flow
+
+### Step 1: Receive Goal
+Receives:
+- Coordinates (x, y)
+- Target map name
+
+### Step 2: Evaluate
+- If goal is in current map → directly use `move_base`.
+- Else → use wormhole path planning.
+
+## 🌀 Transition Scenarios
+
+### 🟢 Direct Transition
+1. Go to wormhole in current map.
+2. Switch map.
+3. Continue to target.
+
+<p align="center">
+  <img src="media/nav1_1.png" width="600"/>
+  <br/><em>Heading to wormhole (map1 → map2)</em>
+</p>
+
+<p align="center">
+  <img src="media/nav1_2.png" width="600"/>
+  <br/><em>Map2 activated, final goal reached</em>
+</p>
+
+### 🔁 Indirect via Hub (e.g. map1)
+1. Navigate to hub.
+2. Switch to next wormhole.
+3. Go to final location.
+
+<p align="center">
+  <img src="media/nav2_1.png" width="600"/>
+  <br/><em>Routing via map1 (hub)</em>
+</p>
+
+<p align="center">
+  <img src="media/nav2_2.png" width="600"/>
+  <br/><em>Map2 → map1 → map3 transition</em>
+</p>
+
+<p align="center">
+  <img src="media/nav2_3.png" width="600"/>
+  <br/><em>Final goal reached</em>
+</p>
+
+## ✨ Features
+- 🛣️ Wormhole navigation across rooms/maps
+- 💾 SQLite for persistent wormhole mapping
+- 🔄 Dynamic map switching using `map_server`
+- ⚙️ Full integration with `move_base`
+- 🛰️ Actionlib interface for goal delivery
+- 🧩 Modular architecture for scalability
+
+## ⚠️ Limitations & Future Work
 
 * Orientation of the robot is always set to `M_PI/2` which creates akward transistion between wormholes and the rooms.
 * Can be solved by echoing current orientation and stopping at that, wait for map switch then continue navigation.
 * Can add validity check for the waypoints, Even though the robot navigates to the correct room/map, I have not implemented a logic to check if the given coordinates are inside the map (not out of bounds).
-* Can add Preemption handling,In the current implementation, if a goal is given another one can't be given until this is finished
+* Can add Preemption handling, In the current implementation, if a goal is given another one can't be given until this is finished
+
+## ✅ Assignment Checklist
+| Requirement                              | Status |
+|------------------------------------------|--------|
+| 1. Video Demonstration                    | ✅ Yes |
+| 2. C++ Source Code                        | ✅ Yes |
+| 3a. Key files listed                      | ✅ Yes |
+| 3b. Build & launch instructions           | ✅ Yes |
+| 3c. Algorithm explained                   | ✅ Yes |
+| 3d. Unimplemented parts mentioned         | ✅ Yes |
+
+## 📦 Repository Summary
+- `navigation_server.cpp` — Handles navigation requests & manages transitions  
+- `map_switcher.cpp` — Switches map using `map_server`  
+- `wormhole_manager.cpp` — Loads DB & determines routes  
+- `launch/` — Startup configurations  
+- `media/` — Simulation images  
+- `README.md` — You’re reading it!
+
+This project provides a **modular and scalable framework** for **multi-environment navigation** using ROS and SQLite, ideal for smart facilities, research robots, or warehouse AMRs.
