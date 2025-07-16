@@ -66,6 +66,15 @@ goal:
   target_y: -6.0
   target_map: 'map2'"
 ```
+You can also publish a goal using the PyQT GUI
+
+```bash
+rosrun multi_map_nav LaunchUi.py
+```
+<p align="center">
+  <img src="media/uigoal.png" width="600"/>
+  <br/><em>specify the map name as well as the target x and y coordinates</em>
+</p>
 
 ## 🗃️ Database Structure
 The **SQLite database** stores all wormhole connections:
