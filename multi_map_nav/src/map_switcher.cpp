@@ -36,6 +36,11 @@ void MapSwitcher::switchToMap(const std::string &map_name)
         }
     }
 
+    if (!valid)
+    {
+        ROS_ERROR("Invalid map file format: %s", map_yaml_path.c_str());
+        return;
+    }
 
     map_file.close();
 
