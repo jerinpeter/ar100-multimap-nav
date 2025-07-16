@@ -62,8 +62,8 @@ goal_id:
   stamp: {secs: 0, nsecs: 0}
   id: ''
 goal:
-  target_x: -5.0
-  target_y: -6.0
+  target_x: -6.0
+  target_y: -4.0
   target_map: 'map2'"
 ```
 You can also publish a goal using the PyQT GUI
@@ -150,12 +150,12 @@ Receives:
 
 <p align="center">
   <img src="media/nav1_1.png" width="600"/>
-  <br/><em>Heading to wormhole (map1 → map2)</em>
+  <br/><em>Heading to wormhole (map2 → map1)</em>
 </p>
 
 <p align="center">
   <img src="media/nav1_2.png" width="600"/>
-  <br/><em>Map2 activated, final goal reached</em>
+  <br/><em>Map1 activated, final goal reached</em>
 </p>
 
 ### 🔁 Indirect via Hub (e.g. map1)
