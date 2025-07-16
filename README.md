@@ -151,6 +151,23 @@ For each stage in the path:
 - If the goal is reached, the next stage begins.
 - If any step fails, the process is halted and an error is returned.
 
+
+<p align="center">
+  <img src="media/nav2_1.png" alt="System Flowchart" width="600"/>
+  <br/>
+  <em>No direct goal, Navigated back to Central hub</em>
+</p>
+<p align="center">
+  <img src="media/nav2_2.png" alt="System Flowchart" width="600"/>
+  <br/>
+  <em>Room2 map gets activated and goal sets to Wormhole (R2<->R1)</em>
+</p>
+<p align="center">
+  <img src="media/nav2_3.png" alt="System Flowchart" width="600"/>
+  <br/>
+  <em>Reached Goal</em>
+</p>
+
 ---
 
 This modular approach allows the robot to traverse complex, multi-room environments with minimal configuration, relying on a combination of wormhole-based transitions and traditional ROS navigation.
