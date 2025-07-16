@@ -71,6 +71,10 @@ find_package(catkin REQUIRED COMPONENTS
 #   Action1.action
 #   Action2.action
 # )
+add_action_files(
+  DIRECTORY action
+  FILES NavigateToGoal.action
+)
 
 ## Generate added messages and services with any dependencies listed here
 # generate_messages(
