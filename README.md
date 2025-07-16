@@ -69,6 +69,37 @@ You can send navigation goals using the ROS action client or directly with rosto
     target_y: -6.0
     target_map: 'map2'"
   ```
+## The Database Structure
+
+The wormhole connections are stored in a SQLite database in the below format:
+
+```sql
+CREATE TABLE wormholes (
+    from_map TEXT,  -- Source map name
+    to_map TEXT,    -- Destination map name
+    from_x REAL,    -- X-coordinate in source map
+    from_y REAL     -- Y-coordinate in source map
+);
+```
+## Custom Action Definition
+NavigateToGoal.action:
+```
+# Request
+float64 target_x
+float64 target_y
+string target_map
+
+---
+
+# Result
+bool success
+string message
+
+---
+
+# Feedback
+string feedback_msg
+```
 ## System Overview
 
 ### WormholeManager
@@ -76,6 +107,15 @@ You can send navigation goals using the ROS action client or directly with rosto
 - Connects to an SQLite database to retrieve wormhole data.
 - Manages map-to-map connectivity and determines navigation routes.
 - Supports querying direct and indirect transitions between maps.
+
+### Wormhole Map Connections
+
+| from_map | to_map | from_x | from_y |
+|----------|--------|--------|--------|
+| map1     | map2   | -7.8   | 1.2    |
+| map2     | map1   | -7.8   | 1.0    |
+| map1     | map3   |  8.5   | 2.5    |
+| map3     | map1   |  8.5   | 2.5    |
 
 ### MapSwitcher
 
