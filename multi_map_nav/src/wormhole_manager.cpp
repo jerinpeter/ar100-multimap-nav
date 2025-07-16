@@ -49,4 +49,5 @@ std::pair<double, double> WormholeManager::getWormholeToMap(const std::string &c
         ROS_ERROR("Query failed: %s", sqlite3_errmsg(db_));
     }
 
+    return {x, y};
 }
