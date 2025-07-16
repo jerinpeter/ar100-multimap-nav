@@ -4,7 +4,7 @@ This repository demonstrates **multi-map, multi-room autonomous navigation** usi
 
 <p align="center">
   <a href="https://www.youtube.com/watch?v=18NSClquw_o" target="_blank">
-    <img src="media/video.png" alt="Watch the demo" width="480">
+    <img src="media/video.png" alt="Watch the demo" width="720">
   </a>
   <br/>
   <em>🎥 Click to view full video demo</em>
